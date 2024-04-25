@@ -16,6 +16,10 @@ RUN composer install
 
 FROM trafex/alpine-nginx-php7:ba1dd422
 
+# fix for the volume mounting of pathfinder
+RUN addgroup -g 1000 pathfinder
+RUN adduser -G pathfinder -u 1000 -D pathfinder
+
 RUN apk update && apk add --no-cache busybox-suid sudo php7-redis php7-pdo php7-pdo_mysql \
     php7-fileinfo php7-event shadow gettext bash apache2-utils logrotate ca-certificates
 
@@ -34,7 +38,7 @@ RUN mkdir -p /etc/nginx/sites_enabled/
 COPY static/nginx/site.conf  /etc/nginx/templateSite.conf
 
 # Configure PHP-FPM
-COPY static/php/fpm-pool.conf /etc/php7/php-fpm.d/zzz_custom.conf
+COPY static/php/fpm-pool.conf /etc/php7/php-fpm.d/zzz_custom.conf.temp
 
 COPY static/php/php.ini /etc/zzz_custom.ini
 # configure cron
@@ -44,7 +48,7 @@ COPY static/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY static/entrypoint.sh   /
 
 WORKDIR /var/www/html
-COPY  --chown=nobody --from=build /app  pathfinder
+COPY  --chown=pathfinder --from=build /app  pathfinder
 
 RUN chmod 0766 pathfinder/logs pathfinder/tmp/ && rm index.php && touch /etc/nginx/.setup_pass &&  chmod +x /entrypoint.sh
 COPY static/pathfinder/routes.ini /var/www/html/pathfinder/app/

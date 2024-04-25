@@ -103,7 +103,7 @@ A fork of techfreak's [Pathfinder-container](https://gitlab.com/techfreak/pathfi
 
 1. **Go back to your console and insert the eve universe dump with this command:**
     ```shell
-    docker-compose exec pfdb /bin/sh -c "unzip -p eve_universe.sql.zip | mysql -u root -p\$MYSQL_ROOT_PASSWORD eve_universe";
+    docker-compose exec pfdb /bin/sh -c "mysql -u root -p\$MYSQL_ROOT_PASSWORD eve_universe < eve_universe.sql";
 
 1. **When everthing works, configure Traefik correctly for production**
     * Remove the staging CA server line  from `docker-compose.yml`from the `command` block of the traefik service definition. 
