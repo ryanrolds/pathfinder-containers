@@ -9,6 +9,7 @@ envsubst  </var/www/html/pathfinder/app/templateConfig.ini >/var/www/html/pathfi
 envsubst  </etc/zzz_custom.ini >/etc/php7/conf.d/zzz_custom.ini
 htpasswd   -c -b -B  /etc/nginx/.setup_pass pf "$APP_PASSWORD"
 ls /var/www/html/pathfinder/app/
+echo $ENV
 cat /var/www/html/pathfinder/app/environment.ini
 cat /var/www/html/pathfinder/app/config.ini
 echo "asdfasdf"
