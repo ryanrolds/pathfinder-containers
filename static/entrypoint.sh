@@ -8,6 +8,6 @@ envsubst  </var/www/html/pathfinder/app/templateEnvironment.ini >/var/www/html/p
 envsubst  </var/www/html/pathfinder/app/templateConfig.ini >/var/www/html/pathfinder/app/config.ini
 envsubst  </etc/zzz_custom.ini >/etc/php7/conf.d/zzz_custom.ini
 htpasswd   -c -b -B  /etc/nginx/.setup_pass pf "$APP_PASSWORD"
-cat /var/www/html/pathfinder/app/environment.ini
-cat /var/www/html/pathfinder/app/config.ini
+# cat /var/www/html/pathfinder/app/environment.ini
+# cat /var/www/html/pathfinder/app/config.ini
 exec "$@"
