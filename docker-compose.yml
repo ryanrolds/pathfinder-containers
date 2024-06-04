@@ -1,14 +1,10 @@
 version: "3.9"
 
 services:
-  pfdb:
+  pf-mariadb:
     image: bianjp/mariadb-alpine:latest
     environment:
       MYSQL_ROOT_PASSWORD: $MYSQL_PASSWORD
-    networks:
-      pf:
-        aliases:
-          - "$MYSQL_HOST"
     volumes:
       - db_data:/var/lib/mysql
       - ./pathfinder/export/sql/eve_universe.sql.zip:/eve_universe.sql.zip
@@ -23,27 +19,21 @@ services:
       - redis_data:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-    networks:
-      pf:
-        aliases:
-          - "$REDIS_HOST"
     logging:
       driver: none
     restart: always
-  pf-socket:
-    image: ghcr.io/goryn-clade/pf-websocket:latest
+  pf-websockets:
+    build: 
+      context: .
+      dockerfile: pf-websocket.Dockerfile
     command: ["--tcpHost", "0.0.0.0"]
-    container_name: socket
-    networks:
-      pf:
-         aliases:
-           - "$PATHFINDER_SOCKET_HOST"
+    container_name: pf-websockets
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
 
     restart: always
-  pf:
+  pathfinder:
     container_name: pathfinder
     build: 
       context: .
@@ -62,9 +52,6 @@ services:
       - "traefik.http.routers.pf-secure.tls.certresolver=letsencrypt"
       - "traefik.http.middlewares.redirecthttps.redirectscheme.scheme=https"
       - "traefik.http.routers.pf.middlewares=redirecthttps"
-    networks:
-      - pf
-      - web
     healthcheck:
       disable: true
     volumes:
@@ -72,13 +59,12 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     depends_on:
-      - pfdb
+      - pf-mariadb
       - pf-redis
-      - pf-socket
+      - pf-websockets
     restart: always
   traefik:
     image: traefik:v2.3
-    container_name: traefik
     command:
       - "--log.level=ERROR"
       - "--api.insecure=true"
@@ -101,8 +87,6 @@ services:
       - ./letsencrypt:/letsencrypt
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-    networks:
-      - web
     restart: always
 
 volumes:
