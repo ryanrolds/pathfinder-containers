@@ -22,17 +22,16 @@ services:
     logging:
       driver: none
     restart: always
-  pf-websockets:
-    build: 
-      context: .
-      dockerfile: pf-websocket.Dockerfile
-    command: ["--tcpHost", "0.0.0.0"]
-    container_name: pf-websockets
-    volumes:
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-
-    restart: always
+  # pf-websockets:
+  #   build: 
+  #     context: .
+  #     dockerfile: pf-websocket.Dockerfile
+  #   command: ["--tcpHost", "0.0.0.0"]
+  #   container_name: pf-websockets
+  #   volumes:
+  #     - /etc/timezone:/etc/timezone:ro
+  #     - /etc/localtime:/etc/localtime:ro
+  #   restart: always
   pathfinder:
     container_name: pathfinder
     build: 
@@ -61,7 +60,7 @@ services:
     depends_on:
       - pf-mariadb
       - pf-redis
-      - pf-websockets
+      # - pf-websockets
     restart: always
   traefik:
     image: traefik:v2.3
